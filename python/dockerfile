@@ -1,0 +1,18 @@
+FROM python:3.13.5 AS build
+WORKDIR /app
+
+COPY . .
+RUN pip install -r $(ls requirement*) -t modules
+
+FROM python:3.13-alpine
+WORKDIR /app
+
+COPY --from=build /app /app
+RUN chmod +x entrypoint.sh
+
+ENV PYTHONPATH=/app/modules
+
+EXPOSE 3000
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+# CMD ["python", "app.py"]
